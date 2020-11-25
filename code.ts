@@ -23,31 +23,60 @@ const textKeys = [
 'textCase',
 'textDecoration'
 ]
+const strokeKeys = [
+  'description',
+  'name',
+  'strokeWeight',
+  'strokeAlign',
+  'strokeCap',
+  'strokeJoin',
+  'dashPattern',
+  'fillStyleId'
+]
 
 
-
-console.log("Running")
 
 figma.currentPage.selection.forEach((sel: any) => {
 
-console.log(sel)
+
 
     if(sel.fills.length > 0 && sel.fillStyleId != ""){
-      let newStyle = figma.createPaintStyle()
+
       let libStyle = figma.getStyleById(sel.fillStyleId)
+  
       if(libStyle.remote == true){
+        let newStyle = figma.createPaintStyle()
+        sel.fillStyleId = newStyle.id
         paintKeys.forEach((key) => {
           newStyle[key] = libStyle[key]
         })
     }
   }
 
+    if(sel.strokes.length > 0 && sel.strokeStyleId != ""){
+
+          let libStyle = figma.getStyleById(sel.strokeStyleId)
+          console.log(libStyle)
+
+          if(libStyle.remote == true){
+            let newStyle = figma.createPaintStyle()
+            sel.strokeStyleId = newStyle.id
+            paintKeys.forEach((key) => {
+              newStyle[key] = libStyle[key]
+            })
+        }
+    }
+      
+    
+
 
     if(sel.type == "TEXT" && sel.textStyleId != ""){
-      let newStyle = figma.createTextStyle()
+    
       let libStyle = figma.getStyleById(sel.textStyleId) as TextStyle
-      console.log(libStyle)
+     
       if(libStyle.remote == true){
+        let newStyle = figma.createTextStyle()
+        sel.textStyleId = newStyle.id
         Promise.all([figma.loadFontAsync(libStyle.fontName)]).then(() => {
         textKeys.forEach((key) => {
           newStyle[key] = libStyle[key]
